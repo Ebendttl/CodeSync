@@ -38,12 +38,19 @@ export function LoginPage() {
       if (isLogin) {
         setAuth(data.token, data.user.id, data.user.username, data.user.avatarColor || '#00d4ff');
       } else {
-        // After successful register, switch to login or auto-login
-        // We will auto-login the user directly if the backend returns a user object
-        // Actually, the register endpoint returns { user }, we need to login to get the token
-        // Let's just switch to login mode for simplicity
-        setIsLogin(true);
-        setError('Account created! Please log in.');
+        // Auto-login after successful registration
+        const loginRes = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const loginData = await loginRes.json();
+        if (loginRes.ok) {
+          setAuth(loginData.token, loginData.user.id, loginData.user.username, loginData.user.avatarColor || '#00d4ff');
+        } else {
+          setIsLogin(true);
+          setError('Account created! Please log in.');
+        }
       }
     } catch (err: any) {
       setError(err.message);

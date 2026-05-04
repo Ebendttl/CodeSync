@@ -1,0 +1,5 @@
+
+
+> @codesync/ui@1.0.0 typecheck /home/ebendttl/portfolio-projects/CodeSync/packages/ui
+> tsc --noEmit
+

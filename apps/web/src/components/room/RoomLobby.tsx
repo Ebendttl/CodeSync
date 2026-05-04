@@ -6,13 +6,13 @@ import { useAuthStore } from '../../store/authStore';
 
 export function RoomLobby({ onJoin }: { onJoin: (roomId: string) => void }) {
   const [roomId, setInputRoomId] = useState('');
-  const { user } = useAuthStore();
+  const { userId } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
 
   const handleCreate = async () => {
     try {
-      if (!user) {
+      if (!userId) {
         setError('You must be logged in to create a room');
         return;
       }
@@ -20,7 +20,7 @@ export function RoomLobby({ onJoin }: { onJoin: (roomId: string) => void }) {
       const res = await fetch(`${API_URL}/api/rooms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'My CodeSync Room', language: 'javascript', ownerId: user.id })
+        body: JSON.stringify({ name: 'My CodeSync Room', language: 'javascript', ownerId: userId })
       });
       const data = await res.json();
       if (data.room && data.room.id) {

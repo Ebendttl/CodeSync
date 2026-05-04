@@ -1,0 +1,5 @@
+
+
+> @codesync/shared-types@1.0.0 typecheck /home/ebendttl/portfolio-projects/CodeSync/packages/shared-types
+> tsc --noEmit
+
