@@ -1,6 +1,6 @@
 # 🚀 CodeSync — Real-Time Collaborative Code Editor
 
-![CodeSync Hero Image](file:///home/ebendttl/.gemini/antigravity/brain/d092f4a5-12ec-4fe9-9a3c-c16f24a2ece1/codesync_hero_image_1777886296297.png)
+![CodeSync Hero Image](./assets/hero.png)
 
 CodeSync is a production-grade, multiplayer code editing platform that combines the precision of the Monaco Editor (VS Code engine) with the real-time collaboration capabilities of Y.js. Designed for high-performance distributed environments, CodeSync features secure sandboxed code execution, live presence tracking, and a robust microservices architecture.
 
