@@ -25,7 +25,7 @@ services:
           name: codesync-redis
           property: connectionString
       - key: JWT_SECRET
-        generateValue: true
+        sync: false
       - key: CORS_ORIGIN
         sync: false # Set to your production frontend URL (e.g., https://codesync-web.onrender.com)
 
