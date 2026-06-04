@@ -1,7 +1,7 @@
 import { Worker } from 'bullmq';
 import * as dotenv from 'dotenv';
 // @ts-ignore
-import { runInSandbox } from './runner/dockerRunner';
+import { runInSandbox } from './runner/dockerRunner.js';
 // @ts-ignore
 import { Language } from '@codesync/shared-types';
 

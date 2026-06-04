@@ -1,6 +1,6 @@
 import { Router } from 'express';
 // @ts-ignore
-import { AuthService } from '../services/authService';
+import { AuthService } from '../services/authService.js';
 const router = Router();
 router.post('/register', async (req, res) => {
     try {

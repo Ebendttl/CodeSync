@@ -1,6 +1,6 @@
 import { Router } from 'express';
 // @ts-ignore
-import { RoomService } from '../services/roomService';
+import { RoomService } from '../services/roomService.js';
 const router = Router();
 router.post('/', async (req, res) => {
     try {

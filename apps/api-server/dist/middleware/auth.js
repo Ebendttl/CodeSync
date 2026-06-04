@@ -1,5 +1,5 @@
 // @ts-ignore
-import { AuthService } from '../services/authService';
+import { AuthService } from '../services/authService.js';
 export function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {

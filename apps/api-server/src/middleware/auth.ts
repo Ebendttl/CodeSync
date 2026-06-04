@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 // @ts-ignore
-import { AuthService } from '../services/authService';
+import { AuthService } from '../services/authService.js';
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;

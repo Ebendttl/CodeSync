@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 // @ts-ignore
-import { db } from '../index';
+import { db } from '../index.js';
 // @ts-ignore
-import { rooms, roomMembers } from '../db/schema';
+import { rooms, roomMembers } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 
 export class RoomService {

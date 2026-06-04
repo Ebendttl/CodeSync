@@ -1,9 +1,9 @@
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
 // @ts-ignore
-import { db } from '../index';
+import { db } from '../index.js';
 // @ts-ignore
-import { users } from '../db/schema';
+import { users } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 export class AuthService {

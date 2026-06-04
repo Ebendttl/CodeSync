@@ -1,7 +1,7 @@
 // @ts-ignore
-import { db } from '../index';
+import { db } from '../index.js';
 // @ts-ignore
-import { snapshots } from '../db/schema';
+import { snapshots } from '../db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 
 export class SnapshotService {

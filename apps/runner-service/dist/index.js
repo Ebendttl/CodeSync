@@ -1,7 +1,7 @@
 import { Worker } from 'bullmq';
 import * as dotenv from 'dotenv';
 // @ts-ignore
-import { runInSandbox } from './runner/dockerRunner';
+import { runInSandbox } from './runner/dockerRunner.js';
 import { Redis } from 'ioredis';
 dotenv.config();
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';

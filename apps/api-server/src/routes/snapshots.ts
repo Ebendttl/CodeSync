@@ -1,6 +1,6 @@
 import { Router } from 'express';
 // @ts-ignore
-import { SnapshotService } from '../services/snapshotService';
+import { SnapshotService } from '../services/snapshotService.js';
 
 const router = Router();
 

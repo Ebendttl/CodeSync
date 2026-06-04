@@ -3,13 +3,13 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from './db/schema';
+import * as schema from './db/schema.js';
 // @ts-ignore
-import authRoutes from './routes/auth';
+import authRoutes from './routes/auth.js';
 // @ts-ignore
-import roomRoutes from './routes/rooms';
+import roomRoutes from './routes/rooms.js';
 // @ts-ignore
-import snapshotRoutes from './routes/snapshots';
+import snapshotRoutes from './routes/snapshots.js';
 
 dotenv.config();
 

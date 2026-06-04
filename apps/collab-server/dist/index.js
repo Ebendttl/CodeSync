@@ -4,13 +4,13 @@ import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import * as dotenv from 'dotenv';
 // @ts-ignore
-import { YjsHandler } from './handlers/yjsHandler';
+import { YjsHandler } from './handlers/yjsHandler.js';
 // @ts-ignore
-import { authMiddleware } from './middleware/authMiddleware';
+import { authMiddleware } from './middleware/authMiddleware.js';
 // @ts-ignore
-import { ChatHandler } from './handlers/chatHandler';
+import { ChatHandler } from './handlers/chatHandler.js';
 // @ts-ignore
-import { ExecutionHandler } from './handlers/executionHandler';
+import { ExecutionHandler } from './handlers/executionHandler.js';
 dotenv.config();
 const port = process.env.PORT || 3001;
 async function bootstrap() {
