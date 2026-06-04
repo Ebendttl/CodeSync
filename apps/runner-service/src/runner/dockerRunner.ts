@@ -1,9 +1,16 @@
-import Docker = require('dockerode');
+import Docker from 'dockerode';
 import { Readable } from 'stream';
 // @ts-ignore
 import { Language, ExecutionResult } from '@codesync/shared-types';
 
-const docker = new Docker({ socketPath: process.env.DOCKER_SOCKET || '/var/run/docker.sock' });
+let docker: Docker;
+if (process.env.DOCKER_HOST) {
+  // If DOCKER_HOST is defined, Dockerode will automatically parse standard Docker env vars
+  // such as DOCKER_HOST, DOCKER_TLS_VERIFY, DOCKER_CERT_PATH, etc.
+  docker = new Docker();
+} else {
+  docker = new Docker({ socketPath: process.env.DOCKER_SOCKET || '/var/run/docker.sock' });
+}
 
 interface DockerConfig {
   image: string;

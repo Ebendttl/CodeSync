@@ -9,6 +9,10 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   }
 
   const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Invalid token format' });
+  }
+
   try {
     const decoded = AuthService.verifyToken(token);
     (req as any).user = decoded;
