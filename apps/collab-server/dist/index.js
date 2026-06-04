@@ -18,10 +18,33 @@ async function bootstrap() {
     const io = new Server(httpServer, {
         cors: { origin: process.env.CORS_ORIGIN || '*' },
     });
-    const pubClient = createClient({ url: process.env.REDIS_URL });
+    const pubClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
     const subClient = pubClient.duplicate();
     await Promise.all([pubClient.connect(), subClient.connect()]);
     io.adapter(createAdapter(pubClient, subClient));
+    // Dedicated Redis subscription client for streaming code execution results
+    const executionSubClient = subClient.duplicate();
+    await executionSubClient.connect();
+    await executionSubClient.pSubscribe('execution:channel:*', (message, channel) => {
+        const roomId = channel.split(':').pop();
+        if (!roomId)
+            return;
+        try {
+            const data = JSON.parse(message);
+            if (data.type === 'output') {
+                io.to(roomId).emit('execution:output', { text: data.text, type: 'stdout' });
+            }
+            else if (data.type === 'error') {
+                io.to(roomId).emit('execution:output', { text: data.text, type: 'stderr' });
+            }
+            else if (data.type === 'complete') {
+                io.to(roomId).emit('execution:complete', { exitCode: data.exitCode });
+            }
+        }
+        catch (err) {
+            console.error('Error handling Redis Pub/Sub execution message:', err);
+        }
+    });
     io.use(authMiddleware);
     const yjsHandler = new YjsHandler(io, pubClient);
     const chatHandler = new ChatHandler(io, pubClient);

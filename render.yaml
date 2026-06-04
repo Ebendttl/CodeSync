@@ -1,5 +1,5 @@
-# Render Blueprint Specification for CodeSync Monorepo
-# This blueprint defines the database, redis cache, api server, websocket server, worker, and frontend.
+# Render Blueprint Specification for CodeSync Monorepo (100% FREE Deployment)
+# This blueprint defines the database, redis cache, api server, and a combined collab + execution service.
 # Reference: https://render.com/docs/blueprints
 
 services:
@@ -7,9 +7,9 @@ services:
   - type: web
     name: codesync-api
     env: node
-    plan: starter # Starter plan recommended for API backend (needs persistent CPU)
+    plan: free # Free tier (automatically sleeps after 15 minutes of inactivity)
     buildCommand: pnpm install && pnpm build --filter api-server
-    startCommand: pnpm --filter api-server start
+    startCommand: node apps/api-server/dist/index.js
     envVars:
       - key: NODE_VERSION
         value: 20.20.2
@@ -29,13 +29,15 @@ services:
       - key: CORS_ORIGIN
         sync: false # Set to your production frontend URL (e.g., https://codesync-web.onrender.com)
 
-  # 2. Collaboration Server (Socket.io Websockets + Y.js Syncing)
+  # 2. Collaboration & Runner Server (Socket.io + Y.js Syncing + Code Execution Worker)
+  # Co-locating both servers in a single free Web Service container allows us to bypass the 
+  # background worker restriction on Render and deploy the whole application 100% for free.
   - type: web
     name: codesync-collab
     env: node
-    plan: starter
-    buildCommand: pnpm install && pnpm build --filter collab-server
-    startCommand: pnpm --filter collab-server start
+    plan: free # Free tier (automatically sleeps after 15 minutes of inactivity)
+    buildCommand: pnpm install && pnpm build --filter collab-server --filter runner-service
+    startCommand: node apps/collab-server/dist/index.js & node apps/runner-service/dist/index.js
     envVars:
       - key: NODE_VERSION
         value: 20.20.2
@@ -51,36 +53,11 @@ services:
       - key: CORS_ORIGIN
         sync: false # Set to your production frontend URL
 
-  # 3. Runner Service (BullMQ Background Worker)
-  # NOTE: To execute user code sandboxes, this background worker needs access to a Docker daemon.
-  # Since Render doesn't support local docker socket access (/var/run/docker.sock), you must set up
-  # a remote Docker host (e.g. on a cheap VPS or EC2 instance) and provide the TLS credentials below.
-  - type: worker
-    name: codesync-runner
-    env: node
-    plan: starter
-    buildCommand: pnpm install && pnpm build --filter runner-service
-    startCommand: pnpm --filter runner-service start
-    envVars:
-      - key: NODE_VERSION
-        value: 20.20.2
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: codesync-redis
-          property: connectionString
-      # Configure connection to your remote Docker daemon:
-      - key: DOCKER_HOST
-        sync: false # e.g. tcp://your-remote-docker-ip:2376
-      - key: DOCKER_TLS_VERIFY
-        value: "1"
-      - key: DOCKER_CERT_PATH
-        sync: false # Path to directory containing remote ca.pem, cert.pem, key.pem
-
-  # 4. Frontend Web Client (Static Hosting)
+  # 3. Frontend Web Client (Static Hosting)
   - type: web
     name: codesync-web
     env: static
+    plan: free
     buildCommand: pnpm install && pnpm build --filter web
     staticPublishPath: apps/web/dist
     envVars:
@@ -95,7 +72,7 @@ services:
           name: codesync-collab
           property: host
 
-  # 5. Redis Instance for Socket.io adapter & BullMQ job coordination
+  # 4. Redis Instance for Socket.io adapter & BullMQ job coordination
   - type: redis
     name: codesync-redis
     plan: free

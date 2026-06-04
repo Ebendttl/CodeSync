@@ -3,6 +3,10 @@ import { Readable } from 'stream';
 // @ts-ignore
 import { Language, ExecutionResult } from '@codesync/shared-types';
 
+import { spawn } from 'child_process';
+import { promises as fs } from 'fs';
+import * as path from 'path';
+
 let docker: Docker;
 if (process.env.DOCKER_HOST) {
   // If DOCKER_HOST is defined, Dockerode will automatically parse standard Docker env vars
@@ -48,12 +52,99 @@ function sanitizeOutput(chunk: string): string {
   return chunk.replace(/\x1B\[\d+;?\d*m/g, '');
 }
 
+async function runLocally(
+  code: string,
+  language: Language,
+  onOutput: (chunk: string) => void,
+  onError: (chunk: string) => void,
+): Promise<ExecutionResult> {
+  const startTime = Date.now();
+  const tempDir = path.join(process.cwd(), 'tmp-execution');
+  await fs.mkdir(tempDir, { recursive: true });
+  
+  const ext = language === 'javascript' ? 'js' : language === 'python' ? 'py' : 'ts';
+  const filename = `code_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const filePath = path.join(tempDir, filename);
+  
+  await fs.writeFile(filePath, code);
+
+  return new Promise((resolve) => {
+    let stdout = '';
+    let stderr = '';
+    let cmd = 'node';
+    let args: string[] = [];
+
+    if (language === 'javascript') {
+      cmd = 'node';
+      args = [filePath];
+    } else if (language === 'python') {
+      cmd = 'python3';
+      args = [filePath];
+    } else if (language === 'typescript') {
+      // Execute typescript file via npx ts-node directly
+      cmd = 'npx';
+      args = ['ts-node', filePath];
+    }
+
+    const child = spawn(cmd, args);
+
+    const timeoutTimer = setTimeout(() => {
+      child.kill();
+      resolve({
+        stdout: stdout.slice(0, 100_000),
+        stderr: stderr.slice(0, 100_000) + '\n[Execution timed out after 10s]',
+        exitCode: -1,
+        timedOut: true,
+        executionTime: Date.now() - startTime,
+      });
+    }, 10000);
+
+    child.stdout.on('data', (data) => {
+      const chunk = data.toString();
+      stdout += chunk;
+      onOutput(chunk);
+    });
+
+    child.stderr.on('data', (data) => {
+      const chunk = data.toString();
+      stderr += chunk;
+      onError(chunk);
+    });
+
+    child.on('close', async (exitCode) => {
+      clearTimeout(timeoutTimer);
+      try {
+        await fs.unlink(filePath);
+      } catch { /* ignore */ }
+      resolve({
+        stdout: stdout.slice(0, 100_000),
+        stderr: stderr.slice(0, 100_000),
+        exitCode: exitCode ?? 0,
+        timedOut: false,
+        executionTime: Date.now() - startTime,
+      });
+    });
+  });
+}
+
 export async function runInSandbox(
   code: string,
   language: Language,
   onOutput: (chunk: string) => void,
   onError: (chunk: string) => void,
 ): Promise<ExecutionResult> {
+  let dockerAvailable = false;
+  try {
+    await docker.ping();
+    dockerAvailable = true;
+  } catch {
+    dockerAvailable = false;
+  }
+
+  if (!dockerAvailable) {
+    console.warn('Docker daemon not available. Falling back to local execution.');
+    return runLocally(code, language, onOutput, onError);
+  }
   const config = LANGUAGE_CONFIG[language];
   const startTime = Date.now();
 

@@ -5,28 +5,45 @@ import { runInSandbox } from './runner/dockerRunner';
 // @ts-ignore
 import { Language } from '@codesync/shared-types';
 
+import { Redis } from 'ioredis';
+
 dotenv.config();
 
-const worker = new Worker('execution-jobs', async job => {
-  const { code, language, jobId } = job.data as { code: string; language: Language; jobId: string };
-  console.log(`Processing job ${jobId} for language ${language}`);
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const pubClient = new Redis(redisUrl);
 
-  // In a real system, we'd stream output back to the Collab Server via Redis Pub/Sub here.
-  // We'll mock the streaming for now since this is the microservice layer.
-  
+const worker = new Worker('execution-jobs', async job => {
+  const { code, language, jobId, roomId } = job.data as { code: string; language: Language; jobId: string; roomId: string };
+  console.log(`Processing job ${jobId} for language ${language} in room ${roomId}`);
+
   const onOutput = (chunk: string) => {
-    // Publish chunk to redis
+    pubClient.publish(`execution:channel:${roomId}`, JSON.stringify({
+      type: 'output',
+      jobId,
+      text: chunk
+    })).catch(console.error);
   };
 
   const onError = (chunk: string) => {
-    // Publish chunk to redis
+    pubClient.publish(`execution:channel:${roomId}`, JSON.stringify({
+      type: 'error',
+      jobId,
+      text: chunk
+    })).catch(console.error);
   };
 
   const result = await runInSandbox(code, language, onOutput, onError);
+  
+  pubClient.publish(`execution:channel:${roomId}`, JSON.stringify({
+    type: 'complete',
+    jobId,
+    exitCode: result.exitCode
+  })).catch(console.error);
+
   return result;
 
 }, { 
-  connection: { url: process.env.REDIS_URL || 'redis://localhost:6379' },
+  connection: { url: redisUrl },
   concurrency: parseInt(process.env.MAX_CONCURRENT_JOBS || '10')
 });
 
