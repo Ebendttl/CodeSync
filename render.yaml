@@ -95,15 +95,15 @@ services:
           name: codesync-collab
           property: host
 
+  # 5. Redis Instance for Socket.io adapter & BullMQ job coordination
+  - type: redis
+    name: codesync-redis
+    plan: free
+    ipAllowList: [] # RESTRICT ACCESS: empty allows only internal Render services to connect
+
 databases:
   # PostgreSQL Database Instance
   - name: codesync-db
     databaseName: codesync
     user: codesync
     plan: free
-
-redis:
-  # Redis Instance for Socket.io adapter & BullMQ job coordination
-  - name: codesync-redis
-    plan: free
-    ipAllowList: [] # RESTRICT ACCESS: empty allows only internal Render services to connect
