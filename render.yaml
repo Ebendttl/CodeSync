@@ -57,7 +57,6 @@ services:
   - type: web
     name: codesync-web
     env: static
-    plan: free
     buildCommand: pnpm install && pnpm build --filter web
     staticPublishPath: apps/web/dist
     envVars:
