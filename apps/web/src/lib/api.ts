@@ -1,6 +1,11 @@
 import { io } from 'socket.io-client';
 
-export const socket = io(import.meta.env.VITE_WS_URL || 'http://localhost:3001', {
+let wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
+if (wsUrl && !wsUrl.startsWith('http://') && !wsUrl.startsWith('https://') && !wsUrl.startsWith('ws://') && !wsUrl.startsWith('wss://')) {
+  wsUrl = 'https://' + wsUrl;
+}
+
+export const socket = io(wsUrl, {
   autoConnect: false,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,

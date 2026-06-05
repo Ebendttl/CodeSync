@@ -12,7 +12,10 @@ export function LoginPage() {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  if (API_URL && !API_URL.startsWith('http://') && !API_URL.startsWith('https://')) {
+    API_URL = 'https://' + API_URL;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -8,7 +8,10 @@ export function RoomLobby({ onJoin }: { onJoin: (roomId: string) => void }) {
   const [roomId, setInputRoomId] = useState('');
   const { userId } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  if (API_URL && !API_URL.startsWith('http://') && !API_URL.startsWith('https://')) {
+    API_URL = 'https://' + API_URL;
+  }
 
   const handleCreate = async () => {
     try {
