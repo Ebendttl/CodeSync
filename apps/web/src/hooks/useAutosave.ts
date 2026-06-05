@@ -5,7 +5,7 @@ export function useAutosave(doc: Y.Doc, roomId: string) {
   useEffect(() => {
     if (!doc) return;
 
-    let timeout: NodeJS.Timeout | null = null;
+    let timeout: any = null;
 
     const onUpdate = () => {
       if (timeout) clearTimeout(timeout);
