@@ -61,15 +61,9 @@ services:
     staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: codesync-api
-          property: host
+        sync: false # Set to your production API URL (e.g., https://codesync-api-okyz.onrender.com)
       - key: VITE_WS_URL
-        fromService:
-          type: web
-          name: codesync-collab
-          property: host
+        sync: false # Set to your production WebSocket URL (e.g., https://codesync-collab-s066.onrender.com)
 
   # 4. Redis Instance for Socket.io adapter & BullMQ job coordination
   - type: redis
