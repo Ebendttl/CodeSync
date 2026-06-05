@@ -14,7 +14,8 @@ import snapshotRoutes from './routes/snapshots.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+const corsOrigin = process.env.CORS_ORIGIN && process.env.CORS_ORIGIN.trim() !== '' ? process.env.CORS_ORIGIN : '*';
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
 const pool = new Pool({

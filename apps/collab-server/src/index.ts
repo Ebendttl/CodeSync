@@ -18,8 +18,9 @@ const port = process.env.PORT || 3001;
 
 async function bootstrap() {
   const httpServer = createServer();
+  const corsOrigin = process.env.CORS_ORIGIN && process.env.CORS_ORIGIN.trim() !== '' ? process.env.CORS_ORIGIN : '*';
   const io = new Server(httpServer, {
-    cors: { origin: process.env.CORS_ORIGIN || '*' },
+    cors: { origin: corsOrigin },
   });
 
   const pubClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
