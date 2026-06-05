@@ -18,7 +18,12 @@ const port = process.env.PORT || 3001;
 
 async function bootstrap() {
   const httpServer = createServer();
-  const corsOrigin = process.env.CORS_ORIGIN && process.env.CORS_ORIGIN.trim() !== '' ? process.env.CORS_ORIGIN : '*';
+  const cleanCorsOrigin = (origin: string | undefined): string => {
+    if (!origin) return '*';
+    const sanitized = origin.replace(/[\r\n\t]/g, '').trim();
+    return sanitized !== '' ? sanitized : '*';
+  };
+  const corsOrigin = cleanCorsOrigin(process.env.CORS_ORIGIN);
   const io = new Server(httpServer, {
     cors: { origin: corsOrigin },
   });

@@ -14,7 +14,12 @@ import snapshotRoutes from './routes/snapshots.js';
 dotenv.config();
 
 const app = express();
-const corsOrigin = process.env.CORS_ORIGIN && process.env.CORS_ORIGIN.trim() !== '' ? process.env.CORS_ORIGIN : '*';
+const cleanCorsOrigin = (origin: string | undefined): string => {
+  if (!origin) return '*';
+  const sanitized = origin.replace(/[\r\n\t]/g, '').trim();
+  return sanitized !== '' ? sanitized : '*';
+};
+const corsOrigin = cleanCorsOrigin(process.env.CORS_ORIGIN);
 app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
