@@ -1,5 +1,5 @@
 import * as argon2 from 'argon2';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 // @ts-ignore
 import { db } from '../index.js';
 // @ts-ignore
