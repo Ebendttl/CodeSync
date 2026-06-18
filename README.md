@@ -7,6 +7,7 @@ CodeSync is a production-grade, multiplayer code editing platform that combines 
 ---
 
 ## 🧭 Project Vision
+
 To build a developer-first collaboration tool that is resilient to network partitions, scalable to thousands of concurrent rooms, and secure against untrusted code execution. CodeSync isn't just a shared text area; it's a full-featured IDE in the browser.
 
 ---
@@ -53,22 +54,26 @@ graph TD
 ## ✨ Key Features
 
 ### 🤝 Real-Time Collaboration (CRDTs)
+
 - **Conflict-Free Replicated Data Types (Y.js):** Ensures eventual consistency without a central coordinator. Edits are merged seamlessly even after network outages.
 - **Micro-latency Sync:** Updates are broadcasted via Socket.io with binary encoding for maximum efficiency.
 - **Custom Socket.io Provider:** A bespoke implementation that integrates Y.js synchronization with our room-based authentication model.
 
 ### 👥 Presence & Awareness
+
 - **Live Cursors:** See exactly where your teammates are typing with colored name tags.
 - **Collaborator Stack:** Visual presence indicators for all active users in a room.
 - **Remote Selections:** Highlighted code blocks show what others are focusing on.
 
 ### 🛡️ Secure Code Execution
+
 - **Docker Isolation:** Code runs in air-gapped, resource-limited Docker containers.
 - **Multi-Language Support:** First-class support for JavaScript, Python, and TypeScript.
 - **Streaming Output:** Stdout and Stderr are streamed back to the client in real-time as the code executes.
 - **Hardened Sandboxes:** Enforcement of CPU, memory, and time limits to prevent resource exhaustion and malicious attacks.
 
 ### 🕒 Revision History & Autosave
+
 - **Two-Tier Saving:** Rapid state persistence in Redis (Hot) and periodic full snapshots in PostgreSQL (Durable).
 - **Point-in-Time Restore:** View historical versions of your code and restore them with a single click.
 - **Conflict-Aware Restoration:** Restoring history uses Y.js transactions to ensure all clients stay in sync.
@@ -77,15 +82,15 @@ graph TD
 
 ## ⚙️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React 18, Vite, Monaco Editor, Zustand |
-| **Backend** | Node.js, Express, Socket.io |
-| **Real-Time** | Y.js (CRDT), Redis (Pub/Sub) |
-| **Database** | PostgreSQL 16, Drizzle ORM |
-| **Execution** | Docker, BullMQ |
-| **Monorepo** | Turborepo, pnpm |
-| **Tooling** | TypeScript (Strict), Vitest, Playwright |
+| Layer         | Technology                              |
+| ------------- | --------------------------------------- |
+| **Frontend**  | React 18, Vite, Monaco Editor, Zustand  |
+| **Backend**   | Node.js, Express, Socket.io             |
+| **Real-Time** | Y.js (CRDT), Redis (Pub/Sub)            |
+| **Database**  | PostgreSQL 16, Drizzle ORM              |
+| **Execution** | Docker, BullMQ                          |
+| **Monorepo**  | Turborepo, pnpm                         |
+| **Tooling**   | TypeScript (Strict), Vitest, Playwright |
 
 ---
 
@@ -112,6 +117,7 @@ codesync/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js:** >= 20.0.0
 - **pnpm:** >= 8.0.0
 - **Docker & Docker Compose**
@@ -119,12 +125,14 @@ codesync/
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
-   git clone https://github.com/your-username/codesync.git
-   cd codesync
+    git clone https://github.com/Ebendttl/CodeSync.git
+    cd CodeSync
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
@@ -137,6 +145,7 @@ codesync/
    - `apps/web/.env`
 
 4. **Spin up Infrastructure:**
+
    ```bash
    docker compose -f infra/docker/docker-compose.yml up -d
    ```
@@ -160,6 +169,7 @@ The application will be available at `http://localhost:80`.
 ---
 
 ## 📜 License
+
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
